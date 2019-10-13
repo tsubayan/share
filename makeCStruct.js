@@ -12,86 +12,70 @@ const LITTLE_ENDIAN = true;
 const BIG_ENDIAN = false;
 
 //  [UCHAR, 'id', 1]がrow
-
+const zxc = console.log;
 // 複数の型
 // 構造体 in 構造体のメモリ構造
 // 配列アクセス →構造体の配列と型の配列
 
 // structのプロパティ名称に合わせたgetter,setterを生成
-function makeGetterAndSetter(_this, _struct, dataView) {
+// offsetStructArrayは構造体配列の時に何番目のものか*構造体size
+function makeGetterAndSetter(_this, _struct, dataView, offsetStructArray) {
   // プロパティ名称取得
   for (let i = 0; i < _struct.length; i++) {
     const row = _struct[i];
     const name = row[1];
     const typeName = row[0][0];
-    // const length = row[2]; // 要素数
+    const length = row[2]; // 要素数
     const offset = row[3];
     const typeSize = row[0][1]; // 型サイズ
 
     if (typeof typeSize !== 'number') {
       // 構造体 in 構造体
-      _this[name] = {};
-      makeGetterAndSetter(_this[name], row[0], dataView);
+      if (length > 1) {
+        zxc('len:', length);
+        _this[name] = [];
+        for (let x = 0; x < length; x++) {
+          _this[name].push({});
+          makeGetterAndSetter(_this[name][x], row[0], dataView, x * getStcutSize(row[0]));
+        }
+      } else {
+        _this[name] = {};
+        makeGetterAndSetter(_this[name], row[0], dataView, 0);
+      }
       continue;
     }
     // additionalOffsetNumberは配列のときの要素の番号 バイト数じゃない
     _this[name] = {
       get: function(additionalOffsetNumber) {
         additionalOffsetNumber = additionalOffsetNumber * typeSize;
+        additionalOffsetNumber += offsetStructArray;
         switch (typeName) {
           case 'UINT8':
             return dataView.getUint8(additionalOffsetNumber + offset);
           case 'UINT16':
-            return dataView.getUint16(
-              additionalOffsetNumber + offset,
-              BIG_ENDIAN
-            );
+            return dataView.getUint16(additionalOffsetNumber + offset, BIG_ENDIAN);
           case 'UINT32':
-            return dataView.getUint32(
-              additionalOffsetNumber + offset,
-              BIG_ENDIAN
-            );
+            return dataView.getUint32(additionalOffsetNumber + offset, BIG_ENDIAN);
           case 'FLOAT32':
-            return dataView.getFloat32(
-              additionalOffsetNumber + offset,
-              BIG_ENDIAN
-            );
+            return dataView.getFloat32(additionalOffsetNumber + offset, BIG_ENDIAN);
           case 'FLOAT64':
-            return dataView.getFloat64(
-              additionalOffsetNumber + offset,
-              BIG_ENDIAN
-            );
+            return dataView.getFloat64(additionalOffsetNumber + offset, BIG_ENDIAN);
         }
       },
       set: function(additionalOffsetNumber, val) {
         additionalOffsetNumber = additionalOffsetNumber * typeSize;
+        additionalOffsetNumber += offsetStructArray;
         switch (typeName) {
           case 'UINT8':
             return dataView.setUint8(additionalOffsetNumber + offset, val);
           case 'UINT16':
-            return dataView.setUint16(
-              additionalOffsetNumber + offset,
-              val,
-              BIG_ENDIAN
-            );
+            return dataView.setUint16(additionalOffsetNumber + offset, val, BIG_ENDIAN);
           case 'UINT32':
-            return dataView.setUint32(
-              additionalOffsetNumber + offset,
-              val,
-              BIG_ENDIAN
-            );
+            return dataView.setUint32(additionalOffsetNumber + offset, val, BIG_ENDIAN);
           case 'FLOAT32':
-            return dataView.setFloat32(
-              additionalOffsetNumber + offset,
-              val,
-              BIG_ENDIAN
-            );
+            return dataView.setFloat32(additionalOffsetNumber + offset, val, BIG_ENDIAN);
           case 'FLOAT64':
-            return dataView.setFloat64(
-              additionalOffsetNumber + offset,
-              val,
-              BIG_ENDIAN
-            );
+            return dataView.setFloat64(additionalOffsetNumber + offset, val, BIG_ENDIAN);
         }
       },
     };
@@ -127,7 +111,7 @@ function addSturctParams(_struct, _parentOffset) {
   // zxc(name,_struct);
 }
 
-module.exports.MakeStruct = class {
+module.exports.MakeCStruct = class {
   constructor(_struct) {
     const clonedStruct = JSON.parse(JSON.stringify(_struct));
     addSturctParams(clonedStruct, 0);
@@ -138,7 +122,7 @@ module.exports.MakeStruct = class {
     this.arraybuffer = new ArrayBuffer(this.bufferSize);
     this.dataView = new DataView(this.arraybuffer);
     // console.log('bufferSize', this.bufferSize);
-    makeGetterAndSetter(this, clonedStruct, this.dataView);
+    makeGetterAndSetter(this, clonedStruct, this.dataView, 0);
   }
 };
 
