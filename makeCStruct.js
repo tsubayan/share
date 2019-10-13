@@ -133,6 +133,10 @@ module.exports.MakeCStruct = class {
     makeGetterAndSetter(this, clonedStruct, this.dataView, 0);
   }
 
+  /**
+   * Bufferを取得する
+   * @param {Buffer} Buffer Buffer
+   */
   setBuffer(buffer) {
     // bufferはBufferを想定 not typedarray arraybuffer
     for (let i = 0; i < buffer.length; i++) {
@@ -141,9 +145,22 @@ module.exports.MakeCStruct = class {
   }
 
   /**
+   * Bufferを取得する
+   * @returns {Buffer} buffer
+   */
+  getBuffer() {
+    // const buff = Buffer.alloc(this.bufferSize);
+    // for (let i = 0; i < this.bufferSize; i++) {
+    //   buff.writeUInt8(this.dataView.getUint8(i), i);
+    // }
+    // return buff;
+    return Buffer.from(this.arraybuffer);
+  }
+
+  /**
    * char配列を文字列化する
-   * @param {*} target 変数名
-   * @param {*} encode  utf8,Shift_JIS, EUC-JP CP932, CP936, CP949, CP950, GB2312, GBK, GB18030, Big5,
+   * @param {Object} target 変数名
+   * @param {string} encode utf8,Shift_JIS, EUC-JP CP932, CP936, CP949, CP950, GB2312, GBK, GB18030, Big5,
    */
   getString(target, encode) {
     const buffer = Buffer.alloc(target.getLength());
@@ -157,21 +174,18 @@ module.exports.MakeCStruct = class {
     return iconv.decode(buffer, encode);
   }
 
+  /**
+   * char配列に文字列を入れる
+   * @param {string} string 文字列
+   * @param {Object} target 変数名
+   * @param {string} encode utf8,Shift_JIS, EUC-JP CP932, CP936, CP949, CP950, GB2312, GBK, GB18030, Big5,
+   */
   setString(string, target, encode) {
     const convedString = iconv.encode(string, encode);
     const buffer = Buffer.from(convedString);
     for (let i = 0; i < target.getLength(); i++) {
       target.set(i, buffer.readUInt8(i));
     }
-  }
-
-  getBuffer() {
-    const buff = Buffer.alloc(this.bufferSize);
-    for (let i = 0; i < this.bufferSize; i++) {
-      buff.writeUInt8(this.dataView.getUint8(i), i);
-    }
-    return buff;
-    // return Buffer.from(this.arraybuffer);
   }
 };
 
