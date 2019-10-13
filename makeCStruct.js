@@ -1,10 +1,15 @@
 'use strict';
+var iconv = require('iconv-lite');
+
 module.exports.UINT8 = ['UINT8', 1];
 module.exports.UCHAR = module.exports.UINT8;
+module.exports.uchar = module.exports.UINT8;
 module.exports.UINT16 = ['UINT16', 2];
 module.exports.USHORT = module.exports.UINT16;
+module.exports.ushort = module.exports.UINT16;
 module.exports.UINT32 = ['UINT32', 4];
 module.exports.ULONG = module.exports.UINT32;
+module.exports.ulong = module.exports.UINT32;
 module.exports.FLOAT32 = ['FLOAT32', 4];
 module.exports.FLOAT64 = ['FLOAT64', 8];
 
@@ -44,7 +49,7 @@ function makeGetterAndSetter(_this, _struct, dataView, offsetStructArray) {
       continue;
     }
 
-    // additionalOffsetNumberは配列のときの要素の番号 バイト数じゃない
+    // additionalOffsetNumberは配列のときの要素の番号 バイト数じゃない 配列じゃないときは0を指定
     _this[name] = {
       get: function(additionalOffsetNumber) {
         additionalOffsetNumber = additionalOffsetNumber * typeSize;
@@ -77,6 +82,9 @@ function makeGetterAndSetter(_this, _struct, dataView, offsetStructArray) {
           case 'FLOAT64':
             return dataView.setFloat64(additionalOffsetNumber + offset, val, BIG_ENDIAN);
         }
+      },
+      getLength: function() {
+        return length;
       },
     };
   }
@@ -123,6 +131,47 @@ module.exports.MakeCStruct = class {
     this.dataView = new DataView(this.arraybuffer);
     // console.log('bufferSize', this.bufferSize);
     makeGetterAndSetter(this, clonedStruct, this.dataView, 0);
+  }
+
+  setBuffer(buffer) {
+    // bufferはBufferを想定 not typedarray arraybuffer
+    for (let i = 0; i < buffer.length; i++) {
+      this.dataView.setUint8(i, buffer.readUInt8(i));
+    }
+  }
+
+  /**
+   * char配列を文字列化する
+   * @param {*} target 変数名
+   * @param {*} encode  utf8,Shift_JIS, EUC-JP CP932, CP936, CP949, CP950, GB2312, GBK, GB18030, Big5,
+   */
+  getString(target, encode) {
+    const buffer = Buffer.alloc(target.getLength());
+    for (let i = 0; i < target.getLength(); i++) {
+      buffer.writeUInt8(target.get(i), i);
+    }
+    if (encode == null) {
+      // UTF-8と解釈する デフォルト
+      return buffer.toString();
+    }
+    return iconv.decode(buffer, encode);
+  }
+
+  setString(string, target, encode) {
+    const convedString = iconv.encode(string, encode);
+    const buffer = Buffer.from(convedString);
+    for (let i = 0; i < target.getLength(); i++) {
+      target.set(i, buffer.readUInt8(i));
+    }
+  }
+
+  getBuffer() {
+    const buff = Buffer.alloc(this.bufferSize);
+    for (let i = 0; i < this.bufferSize; i++) {
+      buff.writeUInt8(this.dataView.getUint8(i), i);
+    }
+    return buff;
+    // return Buffer.from(this.arraybuffer);
   }
 };
 
