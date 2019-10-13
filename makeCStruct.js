@@ -32,7 +32,6 @@ function makeGetterAndSetter(_this, _struct, dataView, offsetStructArray) {
     if (typeof typeSize !== 'number') {
       // 構造体 in 構造体
       if (length > 1) {
-        zxc('len:', length);
         _this[name] = [];
         for (let x = 0; x < length; x++) {
           _this[name].push({});
@@ -44,6 +43,7 @@ function makeGetterAndSetter(_this, _struct, dataView, offsetStructArray) {
       }
       continue;
     }
+
     // additionalOffsetNumberは配列のときの要素の番号 バイト数じゃない
     _this[name] = {
       get: function(additionalOffsetNumber) {
