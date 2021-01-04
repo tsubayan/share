@@ -1,0 +1,142 @@
+<html>
+
+<head>
+    <title>W2UI Demo: grid-1</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.0/jquery.min.js"></script>
+    <script type="text/javascript" src="../w2ui/dist/w2ui.min.js"></script>
+    <!-- <script type="text/javascript" src="http://rawgit.com/vitmalina/w2ui/master/dist/w2ui.min.js"></script> -->
+    <link rel="stylesheet" type="text/css" href="http://rawgit.com/vitmalina/w2ui/master/dist/w2ui.min.css" />
+</head>
+
+
+<script type="text/javascript">
+    "use strict"
+    $(function() {
+        $('#grid').w2grid({
+            name: 'grid',
+            records: [],
+            columns: [{
+                field: 'A',
+                editable: {
+                    type: 'text'
+                },
+                text: "id_console(A)"
+            }, {
+                field: 'CH_A',
+                editable: {
+                    type: 'text'
+                },
+                text: "ch"
+            }, {
+                field: 'B',
+                editable: {
+                    type: 'text'
+                },
+                text: "id_console(B)"
+            }, {
+                field: 'CH_B',
+                editable: {
+                    type: 'text'
+                },
+                text: "ch"
+            }]
+        });
+    });
+
+
+    let handle;
+    let Cnt = 1
+    let ch = 1
+
+    function sch() {
+        Cnt = 1
+        ch = 1
+
+        let string = $("#aaa").val().split(/\n/g)
+        const records = []
+        let i = 1
+        string.forEach(data => {
+            if (data.length === 0) {
+                return
+            }
+            data = data.replace(/^\s+|\s+$/g, "").split(/\s+/g)
+            records.push({
+                recid: i++,
+                A: Number(data[0]),
+                CH_A: Number(data.length > 1 ? data[1] : 1),
+                B: Number(data.length > 2 ? data[2] : 0),
+                CH_B: 1
+            })
+            if (data.length > 3 && Number(data[3]) > 1) {
+                console.log("Bの複数CHは非対応")
+            }
+        });
+        w2ui.grid.clear()
+        w2ui.grid.add(records)
+    }
+
+    function task() {
+        w2ui.grid.selectNone()
+        w2ui.grid.select(Cnt)
+        if (Cnt > w2ui.grid.records.length) {
+            console.log("fin")
+            return
+        }
+        const data = w2ui.grid.get(Cnt)
+        console.log("id", data.A, "ch", ch)
+        console.log("id", data.B, "ch", 1)
+
+        $("#output").html("id " + data.A + " ch " + ch + " id " + data.B + " ch " + 1)
+        if (Cnt === w2ui.grid.records.length && ch === data.CH_A) {
+            clearInterval(handle)
+            console.log("fin")
+        }
+
+        if (ch === data.CH_A) {
+            Cnt++
+            ch = 1
+        } else {
+            ch++
+        }
+    }
+
+
+    function work() {
+        let time = Number($("#interval").val())
+        time = time === 0 ? 2000 : time
+        clearInterval(handle)
+        task()
+        handle = setInterval(task, time)
+    }
+
+    function step() {
+        clearInterval(handle)
+        task()
+    }
+
+    window.onload = function() {
+        let str = ""
+        for (let i = 0; i < 10; i++) {
+            str += i + " 4 " + i * 100 + " 2" + "\n"
+        }
+        $("#aaa").val(str)
+    }
+</script>
+<style>
+    textarea {
+        width: 100%;
+        height: 100px;
+    }
+</style>
+
+<body>
+    <textarea name="aaa" id="aaa" cols="30" rows="10"></textarea>
+    <br> id_regist <input id="id_regist" type="text"> interval <input id="interval" type="text">
+    <button onclick="sch()">スケジュール</button>
+    <button onclick="work()">実行</button>
+    <button onclick="step()">ステップ実行</button>
+    <span id="output"></span>
+    <div id="grid" style="width: 100%; height: 350px;"></div>
+</body>
+
+</html>
