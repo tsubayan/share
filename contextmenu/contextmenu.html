@@ -6,15 +6,44 @@
 </head>
 
 <body>
+    <div id="test"></div>
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
     <script src="debug.js"></script>
+    <script src="polyfill.js"></script>
     <script src="contextmenu.js"></script>
     <script>
         $(function() {
+            "use strict"
             $.contextMenu({
-                selector: ".context-menu-one",
+                selector: "#test",
                 callback: function(key, options) {
                     console.log("[callback]", key, options);
+                },
+                events: {
+                    show: function(options) {
+                        // Add class to the menu
+                        // this.addClass('currently-showing-menu');
+                        // Show an alert with the selector of the menu
+                        // if (confirm('Open menu with selector ' + options.selector + '?') === true) {
+                        // return true;
+                        // } else {
+                        // Prevent the menu to be shown.
+                        // return false;
+                        // }
+                    },
+                    hide: function(options) {
+                        // if (confirm('Hide menu with selector ' + options.selector + '?') === true) {
+                        // return true;
+                        // } else {
+                        // Prevent the menu to be hidden.
+                        // return false;
+                        // }
+                    },
+                    activated: function(options) {
+                        // if (confirm('Hide menu with selector ' + options.selector + '?') === true) {
+                        // console.log('Menu Activated');
+                        // }
+                    }
                 },
                 items: {
                     edit: {
@@ -148,6 +177,63 @@
                 },
             });
         });
+        /*
+    let uniqueIDCounter = 1;
+
+    function getItem(name, items, disabled) {
+        const obj = {
+            name: name,
+            items: items || {},
+            disabled: disabled,
+            uniqueID: uniqueIDCounter,
+        };
+        IndexArray[uniqueIDCounter++] = obj;
+        return obj;
+    }
+
+
+                for (let item = 0; item < 30; item++) {
+            const level2Items = {};
+            for (let item2 = 0; item2 < 20; item2++) {
+                const level3Items = {};
+                for (let item3 = 0; item3 < 20; item3++) {
+                    const level4Items = {};
+                    for (let item4 = 0; item4 < 10; item4++) {
+                        level4Items[item4] = getItem(
+                            "aaaaaaadddddddddddaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaalevel=4," +
+                            item +
+                            "," +
+                            item2 +
+                            "," +
+                            item3 +
+                            "," +
+                            item4, {}
+                        );
+                    }
+                    level3Items[item3] = getItem(
+                        "level=3," + item + "," + item2 + "," + item3,
+                        level4Items
+                    );
+                }
+                if (item2 % 7 === 0) {
+                    level2Items[item2] = getItem("XXXX", {}); //getItem("level=2," + item + "," + item2, level3Items)
+                } else {
+                    level2Items[item2] = getItem(
+                        "level=2," + item + "," + item2,
+                        level3Items
+                    );
+                }
+            }
+            ITEMS[item] = getItem(
+                item +
+                ",level=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1," +
+                item,
+                level2Items
+            );
+        }
+        ITEMS[5] = "-----";
+        // console.log(ITEMS);
+        */
     </script>
 </body>
 
