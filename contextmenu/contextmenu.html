@@ -16,6 +16,7 @@
             "use strict"
             $.contextMenu({
                 selector: "#test",
+                trigger: "any", //none
                 callback: function(key, options) {
                     console.log("[callback]", key, options);
                 },
@@ -48,7 +49,9 @@
                 items: {
                     edit: {
                         name: "Edit",
-                        icon: "edit"
+                        icon: "edit",
+                        disabled: true,
+                        ddd: "fff"
                     },
                     cut: {
                         name: "Cuaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaat",
@@ -121,13 +124,36 @@
                         name: "Sub group",
                         items: {
                             "fold1-key1": {
-                                name: "Foo bar"
+                                name: "Foo bar",
+                                disabled: true
                             },
                             fold2: {
-                                name: "Sub group 2",
+                                name: "Sub group 2111111111111111111111111111111",
                                 items: {
                                     "fold2-key1": {
-                                        name: "alpha"
+                                        name: "sss",
+                                        items: {
+                                            key: {
+                                                name: "name1111111111111111111111111111"
+                                            },
+                                            key1: {
+                                                name: "name1"
+                                            },
+                                            key2: {
+                                                name: "name2",
+                                                items: {
+                                                    "x-key1": {
+                                                        name: "x-name1"
+                                                    },
+                                                    "x-key2": {
+                                                        name: "x-name2"
+                                                    },
+                                                    "x-key3": {
+                                                        name: "x-name3"
+                                                    }
+                                                }
+                                            }
+                                        },
                                     },
                                     "fold2-key2": {
                                         name: "bravo"

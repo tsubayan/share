@@ -1,15 +1,27 @@
-.listroot {
+body {
+    margin: 0;
+}
+
+#divContextMenuCover {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    /* background-color: gray; */
+    opacity: 1;
+}
+
+#contextMenuRoot {
     position: absolute;
 }
 
-.list {
+.contextMenuList {
     color: #CCC;
     font-size: 14px;
     position: absolute;
     overflow: auto;
     max-height: 1px;
     /* 初期値は小さくしておく */
-    min-width: 100px;
+    min-width: 1px;
     /* padding: 3px; */
     background: #444;
     border: 2px solid gray;
@@ -23,7 +35,7 @@
     -ms-user-select: none;
 }
 
-.item {
+.contextMenuItem {
     /* ITEM_HEIGHTも合わせる */
     height: 22px;
     background: #444;
@@ -31,45 +43,29 @@
     white-space: nowrap;
 }
 
-.itemSeparator {
+.contextMenuItemSeparator {
     border-bottom: 1px solid lightgray;
     margin: 3px;
 }
 
-.selected:not(.disabled) {
+.contextMenuItemSelected:not(.contextMenuItemDisabled) {
     background: #09A0AA;
 }
 
-.disabled {
+.contextMenuItemDisabled {
     background: #eee;
 }
 
-body {
-    margin: 0;
-}
-
-#divContextMenuCover {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: gray;
-    opacity: 0.5;
-}
-
-.focusedItem {
-    background: red;
-}
-
-.angle {
+.contextMenuAngle {
     display: inline-block;
 }
 
-.content {
+.contextMenuItemContent {
     display: inline-block;
     position: relative;
 }
 
-.haveChild>.content:after {
+.contextMenuHaveItems>.contextMenuItemContent:after {
     position: absolute;
     top: 50%;
     right: -1em;
