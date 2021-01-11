@@ -49,15 +49,9 @@
             // "idname":{name:"name",items:{name,items}}
         };
 
-        if (operation === "destoy") {
-            // $("#divContextMenuCover").trigger("click");
-            $("#contextMenuRoot").html("");
-            return;
-        }
-
         createMenu(ITEMS, _items, 1);
         const MAX_LEVEL = maxLevel;
-        console.log(ITEMS)
+        // console.log(ITEMS)
 
         event_activated.apply($("#contextMenuRoot"), [options]);
 
@@ -70,7 +64,7 @@
         };
 
         // html生成
-        const menuCover = '<div id="divContextMenuCover" hidden></div>';
+        const menuCover = '<div id="contextMenuCover" hidden></div>';
         const menuRootElement = '<div id="contextMenuRoot" tabIndex="0" hidden>'; //</div>はcontextMenuListのあと
 
         let html = "";
@@ -158,7 +152,7 @@
                     return;
                 }
                 IsCurrentShow = false;
-                $("#divContextMenuCover").trigger("click");
+                $("#contextMenuCover").trigger("click");
                 const uniqueid = tmp.attr("uniqueid");
                 callback(IndexArray[uniqueid].originalKey, IndexArray[uniqueid]);
             })
@@ -489,7 +483,7 @@
                 top: displayPosY,
             });
 
-            $("#divContextMenuCover").show();
+            $("#contextMenuCover").show();
 
             // キーボード操作のため
             setTimeout(function() {
@@ -501,10 +495,10 @@
         $(window)
             .off("resize.contextMenu")
             .on("resize.contextMenu", function(e) {
-                $("#divContextMenuCover").trigger("click");
+                $("#contextMenuCover").trigger("click");
             });
 
-        $("#divContextMenuCover")
+        $("#contextMenuCover")
             .off("click.contextMenu")
             .on("click.contextMenu", function() {
                 IsCurrentShow = false;
@@ -556,6 +550,13 @@
             options = {};
         }
         var o = $.extend(true, {}, defaults, options || {});
+
+
+        if (operation === "destroy") {
+            $("#contextMenuCover").remove();
+            $("#contextMenuRoot").remove();
+            return;
+        }
 
         // $() -> {}
         // $. -> Jquery

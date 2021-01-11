@@ -2,7 +2,7 @@ body {
     margin: 0;
 }
 
-#divContextMenuCover {
+#contextMenuCover {
     position: absolute;
     width: 100%;
     height: 100%;
